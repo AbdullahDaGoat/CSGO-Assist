@@ -10,6 +10,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support import expected_conditions as EC
+from webdriver_manager.chrome import ChromeDriverManager
 from dotenv import load_dotenv
 import requests
 import threading
@@ -175,10 +176,8 @@ def open_crates():
         chrome_options.add_argument('--headless')
         chrome_options.add_argument('--disable-gpu')
 
-
-        
         # Initialize undetected Chrome WebDriver with options
-        driver = uc.Chrome(service=Service('/usr/local/bin/chromedriver'), options=chrome_options)
+        driver = uc.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
 
         # Open main URL
         driver.get(main_url)

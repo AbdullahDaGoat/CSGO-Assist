@@ -1,3 +1,7 @@
+ARG PORT = 443
+
+FROM cypress/browsers:latest
+
 # Use an official Python runtime as a parent image
 FROM python:3.10-slim
 
