@@ -8,6 +8,7 @@ import undetected_chromedriver as uc
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support import expected_conditions as EC
 from dotenv import load_dotenv
 import requests
@@ -171,9 +172,11 @@ def open_crates():
         chrome_options.add_argument("--verbose")  
         chrome_options.add_argument('--no-sandbox')
         chrome_options.add_argument('--disable-dev-shm-usage')
+        chrome_options.add_argument('--headless')
+
         
         # Initialize undetected Chrome WebDriver with options
-        driver = uc.Chrome(options=chrome_options)
+        driver = uc.Chrome(service=Service('/usr/local/bin/chromedriver'), options=chrome_options)
 
         # Open main URL
         driver.get(main_url)

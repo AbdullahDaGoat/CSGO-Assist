@@ -26,6 +26,9 @@ RUN CHROME_DRIVER_VERSION=$(curl -sS chromedriver.storage.googleapis.com/LATEST_
     && chown root:root /usr/local/bin/chromedriver \
     && chmod 0755 /usr/local/bin/chromedriver
 
+RUN chmod +x /usr/local/bin/chromedriver
+
+
 # Copy the current directory contents into the container
 COPY . .
 
@@ -37,3 +40,5 @@ EXPOSE 443
 
 # Run app.py when the container launches
 CMD ["python", "app.py"]
+
+
