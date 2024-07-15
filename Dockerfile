@@ -20,14 +20,13 @@ RUN apt-get update && apt-get install -y \
 # Install ChromeDriver
 RUN CHROME_DRIVER_VERSION=$(curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE) \
     && wget -N https://storage.googleapis.com/chrome-for-testing-public/126.0.6478.126/linux64/chromedriver-linux64.zip -P /tmp/ \
-    && unzip /tmp/chromedriver_linux64.zip -d /tmp/ \
-    && rm /tmp/chromedriver_linux64.zip \
-    && mv /tmp/chromedriver /usr/local/bin/chromedriver \
+    && unzip /tmp/chromedriver-linux64.zip -d /tmp/ \
+    && rm /tmp/chromedriver-linux64.zip \
+    && mv /tmp/chromedriver-linux64/chromedriver /usr/local/bin/chromedriver \
     && chown root:root /usr/local/bin/chromedriver \
     && chmod 0755 /usr/local/bin/chromedriver
 
 RUN chmod +x /usr/local/bin/chromedriver
-
 
 # Copy the current directory contents into the container
 COPY . .
@@ -40,5 +39,3 @@ EXPOSE 443
 
 # Run app.py when the container launches
 CMD ["python", "app.py"]
-
-
