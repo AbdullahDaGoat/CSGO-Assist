@@ -169,6 +169,8 @@ def open_crates():
         chrome_options.add_argument("--disable-extensions")
         chrome_options.add_argument("--log-level=3")  # Suppresses warnings and info logs
         chrome_options.add_argument("--verbose")  
+        chrome_options.add_argument('--no-sandbox')
+        chrome_options.add_argument('--disable-dev-shm-usage')
         
         # Initialize undetected Chrome WebDriver with options
         driver = uc.Chrome(options=chrome_options)
