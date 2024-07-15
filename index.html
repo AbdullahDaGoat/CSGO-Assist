@@ -1,0 +1,363 @@
+
+   <!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSGORoll Crate Opening Log</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        dark: {
+                            100: '#1a202c',
+                            200: '#2d3748',
+                            300: '#4a5568',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-dark-100 text-gray-300 min-h-screen" x-data="{ showCopiedMessage: false }">
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-4xl font-bold mb-6 text-blue-400 border-b-2 border-blue-500 pb-2">CSGORoll Crate Opening Log</h1>
+        
+        <div class="mb-4 flex space-x-2">
+            <button @click="downloadLog()" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded transition duration-300 flex items-center">
+                <i class="fas fa-download mr-2"></i> Download Log
+            </button>
+        </div>
+    </div>
+
+    <script>
+        function downloadLog() {
+            const logContent = document.getElementById('log-container').innerText;
+            const blob = new Blob([logContent], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'csgoroll_log.txt';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+    </script>
+
+    
+    <div class="bg-dark-200 border-l-4 border-green-500 text-green-400 p-4 rounded mb-4">
+        <span class="text-gray-400 text-sm">2024-07-14 23:15:37</span>
+        <p class="mt-1">Closed Popup 1</p>
+    </div>
+    
+    <div class="bg-dark-200 border-l-4 border-green-500 text-green-400 p-4 rounded mb-4">
+        <span class="text-gray-400 text-sm">2024-07-14 23:15:38</span>
+        <p class="mt-1">Closed Popup 2</p>
+    </div>
+    
+    <div class="bg-dark-200 border-l-4 border-green-500 text-green-400 p-4 rounded mb-4">
+        <span class="text-gray-400 text-sm">2024-07-14 23:15:44</span>
+        <p class="mt-1">Clicked Alt Login button</p>
+    </div>
+    
+    <div class="bg-dark-200 border-l-4 border-red-500 text-red-400 p-4 rounded mb-4">
+        <span class="text-gray-400 text-sm">2024-07-14 23:15:45</span>
+        <p class="mt-1">Error clicking Alt Login button: Message: element click intercepted: Element <span class="mat-button-wrapper">...</span> is not clickable at point (1203, 34). Other element would receive the click: <div class="cdk-overlay-backdrop cdk-overlay-dark-backdrop cdk-overlay-backdrop-showing"></div>
+  (Session info: chrome=126.0.6478.127)
+Stacktrace:
+	GetHandleVerifier [0x0069C1C3+27395]
+	(No symbol) [0x00633DC4]
+	(No symbol) [0x00531B7F]
+	(No symbol) [0x00578C22]
+	(No symbol) [0x00576FA8]
+	(No symbol) [0x00574E2B]
+	(No symbol) [0x005743D7]
+	(No symbol) [0x0056918F]
+	(No symbol) [0x0059399C]
+	(No symbol) [0x00568C15]
+	(No symbol) [0x00593C34]
+	(No symbol) [0x005ACB24]
+	(No symbol) [0x00593736]
+	(No symbol) [0x00567541]
+	(No symbol) [0x005680BD]
+	GetHandleVerifier [0x00953A93+2876371]
+	GetHandleVerifier [0x009A7F5D+3221661]
+	GetHandleVerifier [0x0071D634+556916]
+	GetHandleVerifier [0x0072474C+585868]
+	(No symbol) [0x0063CE04]
+	(No symbol) [0x00639818]
+	(No symbol) [0x006399B7]
+	(No symbol) [0x0062BF0E]
+	BaseThreadInitThunk [0x76527BA9+25]
+	RtlInitializeExceptionChain [0x76EBC10B+107]
+	RtlClearBits [0x76EBC08F+191]
+</p>
+    </div>
+    
+    <div class="bg-dark-200 border-l-4 border-green-500 text-green-400 p-4 rounded mb-4">
+        <span class="text-gray-400 text-sm">2024-07-14 23:15:46</span>
+        <p class="mt-1">Logged in successfully</p>
+    </div>
+    
+    <div class="bg-dark-200 border-l-4 border-green-500 text-green-400 p-4 rounded mb-4">
+        <span class="text-gray-400 text-sm">2024-07-14 23:16:03</span>
+        <p class="mt-1">Clicked Rewards button</p>
+    </div>
+    
+    <div class="bg-dark-200 border-l-4 border-blue-500 text-blue-400 p-4 rounded mb-4">
+        <span class="text-gray-400 text-sm">2024-07-14 23:16:04</span>
+        <p class="mt-1">Found 11 crates</p>
+    </div>
+    
+    <div class="bg-dark-200 border-l-4 border-green-500 text-green-400 p-4 rounded mb-4">
+        <span class="text-gray-400 text-sm">2024-07-14 23:16:05</span>
+        <p class="mt-1">Opened crate</p>
+    </div>
+    
+    <div class="bg-dark-200 border-l-4 border-green-500 text-green-400 p-4 rounded mb-4">
+        <span class="text-gray-400 text-sm">2024-07-14 23:16:11</span>
+        <p class="mt-1">Opened box</p>
+    </div>
+    
+    <div class="bg-dark-200 border-l-4 border-blue-500 text-blue-400 p-4 rounded mb-4">
+        <span class="text-gray-400 text-sm">2024-07-14 23:16:18</span>
+        <p class="mt-1">Captured item value: 9.11</p>
+    </div>
+    
+    <div class="bg-dark-200 border-l-4 border-green-500 text-green-400 p-4 rounded mb-4">
+        <span class="text-gray-400 text-sm">2024-07-14 23:16:18</span>
+        <p class="mt-1">Sold reward</p>
+    </div>
+    
+    <div class="bg-dark-200 border-l-4 border-green-500 text-green-400 p-4 rounded mb-4">
+        <span class="text-gray-400 text-sm">2024-07-14 23:16:24</span>
+        <p class="mt-1">Confirmed sale</p>
+    </div>
+    
+    <div class="bg-dark-200 border-l-4 border-green-500 text-green-400 p-4 rounded mb-4">
+        <span class="text-gray-400 text-sm">2024-07-14 23:16:29</span>
+        <p class="mt-1">Closed crate</p>
+    </div>
+    
+    <div class="bg-dark-200 border-l-4 border-green-500 text-green-400 p-4 rounded mb-4">
+        <span class="text-gray-400 text-sm">2024-07-14 23:16:30</span>
+        <p class="mt-1">Opened crate</p>
+    </div>
+    
+    <div class="bg-dark-200 border-l-4 border-green-500 text-green-400 p-4 rounded mb-4">
+        <span class="text-gray-400 text-sm">2024-07-14 23:16:35</span>
+        <p class="mt-1">Opened box</p>
+    </div>
+    
+    <div class="bg-dark-200 border-l-4 border-blue-500 text-blue-400 p-4 rounded mb-4">
+        <span class="text-gray-400 text-sm">2024-07-14 23:16:43</span>
+        <p class="mt-1">Captured item value: 9.14</p>
+    </div>
+    
+    <div class="bg-dark-200 border-l-4 border-green-500 text-green-400 p-4 rounded mb-4">
+        <span class="text-gray-400 text-sm">2024-07-14 23:16:46</span>
+        <p class="mt-1">Sold reward</p>
+    </div>
+    
+    <div class="bg-dark-200 border-l-4 border-green-500 text-green-400 p-4 rounded mb-4">
+        <span class="text-gray-400 text-sm">2024-07-14 23:16:50</span>
+        <p class="mt-1">Confirmed sale</p>
+    </div>
+    
+    <div class="bg-dark-200 border-l-4 border-green-500 text-green-400 p-4 rounded mb-4">
+        <span class="text-gray-400 text-sm">2024-07-14 23:16:55</span>
+        <p class="mt-1">Closed crate</p>
+    </div>
+    
+    <div class="bg-dark-200 border-l-4 border-green-500 text-green-400 p-4 rounded mb-4">
+        <span class="text-gray-400 text-sm">2024-07-14 23:16:56</span>
+        <p class="mt-1">Opened crate</p>
+    </div>
+    
+    <div class="bg-dark-200 border-l-4 border-green-500 text-green-400 p-4 rounded mb-4">
+        <span class="text-gray-400 text-sm">2024-07-14 23:17:01</span>
+        <p class="mt-1">Opened box</p>
+    </div>
+    
+    <div class="bg-dark-200 border-l-4 border-blue-500 text-blue-400 p-4 rounded mb-4">
+        <span class="text-gray-400 text-sm">2024-07-14 23:17:08</span>
+        <p class="mt-1">Captured item value: 9.16</p>
+    </div>
+    
+    <div class="bg-dark-200 border-l-4 border-green-500 text-green-400 p-4 rounded mb-4">
+        <span class="text-gray-400 text-sm">2024-07-14 23:17:12</span>
+        <p class="mt-1">Sold reward</p>
+    </div>
+    
+    <div class="bg-dark-200 border-l-4 border-green-500 text-green-400 p-4 rounded mb-4">
+        <span class="text-gray-400 text-sm">2024-07-14 23:17:15</span>
+        <p class="mt-1">Confirmed sale</p>
+    </div>
+    
+    <div class="bg-dark-200 border-l-4 border-green-500 text-green-400 p-4 rounded mb-4">
+        <span class="text-gray-400 text-sm">2024-07-14 23:17:21</span>
+        <p class="mt-1">Closed crate</p>
+    </div>
+    
+    <div class="bg-dark-200 border-l-4 border-green-500 text-green-400 p-4 rounded mb-4">
+        <span class="text-gray-400 text-sm">2024-07-14 23:17:22</span>
+        <p class="mt-1">Opened crate</p>
+    </div>
+    
+    <div class="bg-dark-200 border-l-4 border-green-500 text-green-400 p-4 rounded mb-4">
+        <span class="text-gray-400 text-sm">2024-07-14 23:17:27</span>
+        <p class="mt-1">Opened box</p>
+    </div>
+    
+    <div class="bg-dark-200 border-l-4 border-blue-500 text-blue-400 p-4 rounded mb-4">
+        <span class="text-gray-400 text-sm">2024-07-14 23:17:34</span>
+        <p class="mt-1">Captured item value: 9.20</p>
+    </div>
+    
+    <div class="bg-dark-200 border-l-4 border-green-500 text-green-400 p-4 rounded mb-4">
+        <span class="text-gray-400 text-sm">2024-07-14 23:17:34</span>
+        <p class="mt-1">Sold reward</p>
+    </div>
+    
+    <div class="bg-dark-200 border-l-4 border-green-500 text-green-400 p-4 rounded mb-4">
+        <span class="text-gray-400 text-sm">2024-07-14 23:17:38</span>
+        <p class="mt-1">Confirmed sale</p>
+    </div>
+    
+    <div class="bg-dark-200 border-l-4 border-green-500 text-green-400 p-4 rounded mb-4">
+        <span class="text-gray-400 text-sm">2024-07-14 23:17:43</span>
+        <p class="mt-1">Closed crate</p>
+    </div>
+    
+    <div class="bg-dark-200 border-l-4 border-green-500 text-green-400 p-4 rounded mb-4">
+        <span class="text-gray-400 text-sm">2024-07-14 23:17:44</span>
+        <p class="mt-1">Opened crate</p>
+    </div>
+    
+    <div class="bg-dark-200 border-l-4 border-green-500 text-green-400 p-4 rounded mb-4">
+        <span class="text-gray-400 text-sm">2024-07-14 23:17:49</span>
+        <p class="mt-1">Opened box</p>
+    </div>
+    
+    <div class="bg-dark-200 border-l-4 border-blue-500 text-blue-400 p-4 rounded mb-4">
+        <span class="text-gray-400 text-sm">2024-07-14 23:17:57</span>
+        <p class="mt-1">Captured item value: 9.31</p>
+    </div>
+    
+    <div class="bg-dark-200 border-l-4 border-green-500 text-green-400 p-4 rounded mb-4">
+        <span class="text-gray-400 text-sm">2024-07-14 23:17:58</span>
+        <p class="mt-1">Sold reward</p>
+    </div>
+    
+    <div class="bg-dark-200 border-l-4 border-green-500 text-green-400 p-4 rounded mb-4">
+        <span class="text-gray-400 text-sm">2024-07-14 23:18:01</span>
+        <p class="mt-1">Confirmed sale</p>
+    </div>
+    
+    <div class="bg-dark-200 border-l-4 border-green-500 text-green-400 p-4 rounded mb-4">
+        <span class="text-gray-400 text-sm">2024-07-14 23:18:07</span>
+        <p class="mt-1">Closed crate</p>
+    </div>
+    
+    <div class="bg-dark-200 border-l-4 border-green-500 text-green-400 p-4 rounded mb-4">
+        <span class="text-gray-400 text-sm">2024-07-14 23:18:08</span>
+        <p class="mt-1">Opened crate</p>
+    </div>
+    
+    <div class="bg-dark-200 border-l-4 border-green-500 text-green-400 p-4 rounded mb-4">
+        <span class="text-gray-400 text-sm">2024-07-14 23:18:14</span>
+        <p class="mt-1">Opened box</p>
+    </div>
+    
+    <div class="bg-dark-200 border-l-4 border-blue-500 text-blue-400 p-4 rounded mb-4">
+        <span class="text-gray-400 text-sm">2024-07-14 23:18:21</span>
+        <p class="mt-1">Captured item value: 9.74</p>
+    </div>
+    
+    <div class="bg-dark-200 border-l-4 border-green-500 text-green-400 p-4 rounded mb-4">
+        <span class="text-gray-400 text-sm">2024-07-14 23:18:21</span>
+        <p class="mt-1">Sold reward</p>
+    </div>
+    
+    <div class="bg-dark-200 border-l-4 border-green-500 text-green-400 p-4 rounded mb-4">
+        <span class="text-gray-400 text-sm">2024-07-14 23:18:25</span>
+        <p class="mt-1">Confirmed sale</p>
+    </div>
+    
+    <div class="bg-dark-200 border-l-4 border-green-500 text-green-400 p-4 rounded mb-4">
+        <span class="text-gray-400 text-sm">2024-07-14 23:18:33</span>
+        <p class="mt-1">Closed crate</p>
+    </div>
+    
+    <div class="bg-dark-200 border-l-4 border-green-500 text-green-400 p-4 rounded mb-4">
+        <span class="text-gray-400 text-sm">2024-07-14 23:18:34</span>
+        <p class="mt-1">Opened crate</p>
+    </div>
+    
+    <div class="bg-dark-200 border-l-4 border-green-500 text-green-400 p-4 rounded mb-4">
+        <span class="text-gray-400 text-sm">2024-07-14 23:18:39</span>
+        <p class="mt-1">Opened box</p>
+    </div>
+    
+    <div class="bg-dark-200 border-l-4 border-blue-500 text-blue-400 p-4 rounded mb-4">
+        <span class="text-gray-400 text-sm">2024-07-14 23:18:47</span>
+        <p class="mt-1">Captured item value: 10.38</p>
+    </div>
+    
+    <div class="bg-dark-200 border-l-4 border-green-500 text-green-400 p-4 rounded mb-4">
+        <span class="text-gray-400 text-sm">2024-07-14 23:18:47</span>
+        <p class="mt-1">Sold reward</p>
+    </div>
+    
+    <div class="bg-dark-200 border-l-4 border-green-500 text-green-400 p-4 rounded mb-4">
+        <span class="text-gray-400 text-sm">2024-07-14 23:18:50</span>
+        <p class="mt-1">Confirmed sale</p>
+    </div>
+    
+    <div class="bg-dark-200 border-l-4 border-green-500 text-green-400 p-4 rounded mb-4">
+        <span class="text-gray-400 text-sm">2024-07-14 23:18:56</span>
+        <p class="mt-1">Closed crate</p>
+    </div>
+    
+    <div class="bg-dark-200 border-l-4 border-blue-500 text-blue-400 p-4 rounded mb-4">
+        <span class="text-gray-400 text-sm">2024-07-14 23:18:56</span>
+        <p class="mt-1">Crate is disabled, skipping...</p>
+    </div>
+    
+    <div class="bg-dark-200 border-l-4 border-blue-500 text-blue-400 p-4 rounded mb-4">
+        <span class="text-gray-400 text-sm">2024-07-14 23:18:56</span>
+        <p class="mt-1">Crate is disabled, skipping...</p>
+    </div>
+    
+    <div class="bg-dark-200 border-l-4 border-blue-500 text-blue-400 p-4 rounded mb-4">
+        <span class="text-gray-400 text-sm">2024-07-14 23:18:57</span>
+        <p class="mt-1">Crate is disabled, skipping...</p>
+    </div>
+    
+    <div class="bg-dark-200 border-l-4 border-blue-500 text-blue-400 p-4 rounded mb-4">
+        <span class="text-gray-400 text-sm">2024-07-14 23:18:57</span>
+        <p class="mt-1">Crate is disabled, skipping...</p>
+    </div>
+    
+    <div class="bg-dark-200 border-l-4 border-green-500 text-green-400 p-4 rounded mb-4">
+        <span class="text-gray-400 text-sm">2024-07-14 23:18:57</span>
+        <p class="mt-1">Crates opened and sold successfully!</p>
+    </div>
+    
+    <div class="bg-dark-200 border-l-4 border-blue-500 text-blue-400 p-4 rounded mb-4">
+        <span class="text-gray-400 text-sm">2024-07-14 23:18:57</span>
+        <p class="mt-1"><@610938347652775947>, Hey there I have succesfully opened **7** Crates on **2024-07-14 23:18:57**. We also successfully sold all of the crates amounting to a total value of: **$ 66.04, in game currency**! My Logs are can be viewed and downloaded at https://localhost:443 -- Thanks for using Crate Open Bot! -- Made by DebateMyRoomba</p>
+    </div>
+    
+    <div class="bg-dark-200 border-l-4 border-blue-500 text-blue-400 p-4 rounded mb-4">
+        <span class="text-gray-400 text-sm">2024-07-14 23:18:58</span>
+        <p class="mt-1">Scheduling crate opening every 24 hours</p>
+    </div>
+    
