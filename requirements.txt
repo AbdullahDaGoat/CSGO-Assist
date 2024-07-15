@@ -1,5 +1,5 @@
-python-dotenv==0.21.0
-requests==2.32.0
-schedule==1.2.2
-undetected-chromedriver==3.4.6
-selenium==4.1.0
+python-dotenv
+requests
+schedule
+undetected-chromedriver
+selenium
