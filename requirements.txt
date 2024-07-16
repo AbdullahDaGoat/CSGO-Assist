@@ -3,3 +3,4 @@ requests
 schedule
 undetected-chromedriver
 selenium
+webdriver_manager

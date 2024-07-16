@@ -30,6 +30,13 @@ RUN CHROME_DRIVER_VERSION=$(curl -sS chromedriver.storage.googleapis.com/LATEST_
 
 RUN chmod +x /usr/local/bin/chromedriver
 
+# Install virtualenv
+RUN pip install --no-cache-dir virtualenv
+
+# Create and activate a virtual environment
+RUN virtualenv venv
+ENV PATH="/app/venv/bin:$PATH"
+
 # Copy the current directory contents into the container
 COPY . .
 
