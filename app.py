@@ -164,6 +164,8 @@ sold_values = []
 def open_crates():
     driver = None # Initialize chrome web driver as None
     crates_opened = 0  # Counter for number of crates opened
+    initial_balance = 0.00  # Default initial balance
+    final_balance = 0.00  # Default final balance
     try:
         logger.info("Starting the application")
         # Configure Chrome options to prevent bot from being blocked / gettoing external errors
@@ -241,10 +243,11 @@ def open_crates():
             log_to_html(f"Error clicking rewards button: {e}", "error")
 
         try:
-            initial_balance_element = WebDriverWait(driver, 5).until(
-                EC.visibility_of_element_located((By.CSS_SELECTOR, '.balance .amount'))
+            balance_container = WebDriverWait(driver, 5).until(
+                EC.visibility_of_element_located((By.CSS_SELECTOR, '.balance-container'))
             )
-            initial_balance = float(initial_balance_element.text.replace('$', '').replace(',', ''))
+            balance_text = balance_container.find_element(By.CSS_SELECTOR, '[data-test="value"]').text
+            initial_balance = float(balance_text.replace('$', '').replace(',', ''))
             log_to_html(f"Initial balance: ${initial_balance:.2f}", "info")
         except Exception as e:
             log_to_html(f"Error extracting initial balance: {e}", "error")
@@ -315,10 +318,11 @@ def open_crates():
         send_to_discord('Crates opened and sold successfully!')
 
         try:
-            final_balance_element = WebDriverWait(driver, 5).until(
-                EC.visibility_of_element_located((By.CSS_SELECTOR, '.balance .amount'))
+            balance_container = WebDriverWait(driver, 5).until(
+                EC.visibility_of_element_located((By.CSS_SELECTOR, '.balance-container'))
             )
-            final_balance = float(final_balance_element.text.replace('$', '').replace(',', ''))
+            balance_text = balance_container.find_element(By.CSS_SELECTOR, '[data-test="value"]').text
+            final_balance = float(balance_text.replace('$', '').replace(',', ''))
             log_to_html(f"Final balance: ${final_balance:.2f}", "info")
         except Exception as e:
             log_to_html(f"Error extracting final balance: {e}", "error")
