@@ -1,4 +1,5 @@
 import os
+import sys
 import time
 from datetime import datetime
 import logging
@@ -7,10 +8,14 @@ import undetected_chromedriver as uc
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support import expected_conditions as EC
+from webdriver_manager.chrome import ChromeDriverManager
 from dotenv import load_dotenv
 import requests
 import threading
+from http.server import SimpleHTTPRequestHandler
+from socketserver import TCPServer
 from flask import Flask, send_file
 
 load_dotenv()
@@ -19,15 +24,18 @@ load_dotenv()
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
+# Set up ChromeDriver and Prevent excess logging
+sys.stderr = open(os.devnull, 'w')
+
 # Read environment variables
 email = os.getenv('EMAIL')
 password = os.getenv('PASSWORD')
-discord_webhook_url = os.getenv('DISCORD_WEBHOOK_URL')
+discord_webhook_url = "https://discord.com/api/webhooks/1261580835035807744/Wh3dne1wda8oX5zlrDZUVtYHhkTaUYOwhkD_Y5KLlZb8oxQ_xWTCVQljPxwabYpwWc0r"
 
 # Main website URL
 main_url = 'https://www.csgoroll.com/withdraw/csgo/p2p'
 
-# Initialize HTML log
+# Function to render html template
 def initialize_html_log():
     html_template = """
     <!DOCTYPE html>
@@ -65,7 +73,6 @@ def initialize_html_log():
                     <i class="fas fa-download mr-2"></i> Download Log
                 </button>
             </div>
-            <div id="log-container"></div>
         </div>
 
         <script>
@@ -82,33 +89,37 @@ def initialize_html_log():
                 URL.revokeObjectURL(url);
             }
         </script>
-    </body>
-    </html>
     """
     with open('index.html', 'w') as file:
         file.write(html_template)
 
+
 def log_to_html(message, level='info'):
     log_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    # Define Tailwind classes for different log levels
     level_classes = {
         'info': 'border-blue-500 text-blue-400',
         'success': 'border-green-500 text-green-400',
         'warning': 'border-yellow-500 text-yellow-400',
         'error': 'border-red-500 text-red-400'
     }
+    
+    # Use the appropriate class based on the log level
     level_class = level_classes.get(level, level_classes['info'])
+    
     log_entry = f"""
     <div class="bg-dark-200 border-l-4 {level_class} p-4 rounded mb-4">
         <span class="text-gray-400 text-sm">{log_time}</span>
         <p class="mt-1">{message}</p>
     </div>
     """
+    
     with open('index.html', 'r+') as file:
         content = file.read()
-        position = content.find('<div id="log-container"></div>')
+        position = content.find('</div></body>')
         if position != -1:
             file.seek(position)
-            file.write(f'{log_entry}\n<div id="log-container"></div>')
+            file.write(log_entry + '</div></body></html>')
         else:
             file.write(log_entry)
 
@@ -124,105 +135,232 @@ def send_to_discord(message):
 
 def handle_popups(driver):
     popups_handled = False
+
     while not popups_handled:
         try:
+            # Handle Popup 1
             close_button = WebDriverWait(driver, 30).until(
                 EC.element_to_be_clickable((By.CSS_SELECTOR, 'button.mat-focus-indicator.close.mat-icon-button.mat-button-base'))
             )
             close_button.click()
             log_to_html("Closed Popup 1", "success")
+
+            # Handle Popup 2
             popup2_accept_button = WebDriverWait(driver, 30).until(
                 EC.element_to_be_clickable((By.CSS_SELECTOR, 'button.cky-btn.cky-btn-accept'))
             )
             popup2_accept_button.click()
             log_to_html("Closed Popup 2", "success")
-            popups_handled = True
+
+            popups_handled = True  # Both popups handled successfully
         except Exception as e:
             log_to_html(f"Error handling popups: {e}", "warning")
-            time.sleep(5)
+            time.sleep(5)  # Wait before retrying
 
+
+# Initialize Sold values as a list to map later (so if sold value is none then the value outputed is zero)
 sold_values = []
 
+# Function to login and open crates
 def open_crates():
-    driver = None
-    crates_opened = 0
-    initial_balance = 0.00
-    final_balance = 0.00
+    driver = None # Initialize chrome web driver as None
+    crates_opened = 0  # Counter for number of crates opened
+    initial_balance = 0.00  # Default initial balance
+    final_balance = 0.00  # Default final balance
     try:
         logger.info("Starting the application")
+        # Configure Chrome options to prevent bot from being blocked / gettoing external errors
         chrome_options = Options()
         chrome_options.add_argument("--incognito")
         chrome_options.add_argument("--disable-blink-features=AutomationControlled")
         chrome_options.add_argument("--disable-extensions")
-        chrome_options.add_argument("--log-level=3")
-        chrome_options.add_argument("--verbose")
+        chrome_options.add_argument("--log-level=3")  # Suppresses warnings and info logs
+        chrome_options.add_argument("--verbose")  
         chrome_options.add_argument('--no-sandbox')
         chrome_options.add_argument('--disable-dev-shm-usage')
         chrome_options.add_argument('--headless')
         chrome_options.add_argument('--disable-gpu')
-        driver_path = '/root/.local/share/undetected_chromedriver/undetected_chromedriver'  # Path to ChromeDriver
+
+        # Initialize undetected Chrome WebDriver with options
+        driver_path = '/usr/local/bin/chromedriver'  # Path to ChromeDriver
         driver = uc.Chrome(driver_executable_path=driver_path, options=chrome_options)
         logger.info("Page title was '{}'".format(driver.title))
+        # Open main URL
         driver.get(main_url)
+
+        # Call the Handle popups function
         handle_popups(driver)
+
+        # Wait for the entire page to load
         time.sleep(5)
-        alt_login_button = WebDriverWait(driver, 5).until(
-            EC.visibility_of_element_located((By.CSS_SELECTOR, 'a.mat-button.mat-button-base.link-btn'))
-        )
-        alt_login_button.click()
-        log_to_html("Clicked Alt Login button", "success")
-        alt_login_button_span = alt_login_button.find_element(By.CSS_SELECTOR, 'span.mat-button-wrapper')
-        alt_login_button_span.click()
-        log_to_html("Clicked Alt Login button (span)", "success")
-        email_input = driver.find_element(By.CSS_SELECTOR, 'input[formcontrolname="email"]')
-        password_input = driver.find_element(By.CSS_SELECTOR, 'input[formcontrolname="password"]')
-        email_input.clear()
-        password_input.clear()
-        email_input.send_keys(email)
-        password_input.send_keys(password)
-        login_button = driver.find_element(By.CSS_SELECTOR, 'button[type="submit"]')
-        login_button.click()
-        log_to_html("Logged in successfully", "success")
-        time.sleep(15)
-        rewards_button = WebDriverWait(driver, 5).until(
-            EC.element_to_be_clickable((By.CSS_SELECTOR, 'a.nav-link[href="/boxes/world/daily-free"]'))
-        )
-        rewards_button.click()
-        log_to_html("Clicked Rewards button", "success")
-        balance_container = WebDriverWait(driver, 5).until(
-            EC.visibility_of_element_located((By.CSS_SELECTOR, '.balance-container'))
-        )
-        balance_text = balance_container.find_element(By.CSS_SELECTOR, '[data-test="value"]').text
-        initial_balance = float(balance_text.replace('$', '').replace(',', ''))
-        log_to_html(f"Initial balance: ${initial_balance:.2f}", "info")
-        crate_elements = WebDriverWait(driver, 10).until(
-            EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'cw-box-grid-item-gaming'))
-        )
-        log_to_html(f'Found {len(crate_elements)} crates', "info")
-        send_to_discord(f'Found {len(crate_elements)} crates')
-        for crate in crate_elements:
-            crate.click()
-            log_to_html("Clicked crate", "info")
-            time.sleep(10)
-            sold_value_element = WebDriverWait(driver, 5).until(
-                EC.visibility_of_element_located((By.CSS_SELECTOR, 'span.value'))
+
+        # Click on the "Alt Login" button
+        try:
+            alt_login_button = WebDriverWait(driver, 5).until(
+                EC.visibility_of_element_located((By.CSS_SELECTOR, 'a.mat-button.mat-button-base.link-btn'))
             )
-            sold_value = float(sold_value_element.text.replace('$', '').replace(',', ''))
-            sold_values.append(sold_value)
-            crates_opened += 1
-            log_to_html(f"Sold value: ${sold_value:.2f}", "info")
-            send_to_discord(f"Sold value: ${sold_value:.2f}")
-            log_to_html(f"Crates opened: {crates_opened}", "success")
-        balance_text = balance_container.find_element(By.CSS_SELECTOR, '[data-test="value"]').text
-        final_balance = float(balance_text.replace('$', '').replace(',', ''))
-        log_to_html(f"Final balance: ${final_balance:.2f}", "info")
-        message = f"<@610938347652775947> {crates_opened} Crates open -- {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ${final_balance - initial_balance:.2f} -- Logs above and at url: localhost:5000"
-        send_to_discord(message)
+            alt_login_button.click()
+            log_to_html("Clicked Alt Login button", "success")
+
+            # Optionally, click on the <span> element if necessary
+            alt_login_button_span = alt_login_button.find_element(By.CSS_SELECTOR, 'span.mat-button-wrapper')
+            alt_login_button_span.click()
+            log_to_html("Clicked Alt Login button (span)", "success")
+
+        except Exception as e:
+            log_to_html(f"Error clicking Alt Login button: {e}", "error")
+
+        # Clear (in case of autofill) and fill in the email and password fields
+        try:
+            email_input = driver.find_element(By.CSS_SELECTOR, 'input[formcontrolname="email"]')
+            password_input = driver.find_element(By.CSS_SELECTOR, 'input[formcontrolname="password"]')
+
+            email_input.clear()
+            password_input.clear()
+
+            email_input.send_keys(email)
+            password_input.send_keys(password)
+        except Exception as e:
+            log_to_html(f"Error filling in email and password: {e}", "error")
+
+        # Click the Login button
+        try:
+            login_button = driver.find_element(By.CSS_SELECTOR, 'button[type="submit"]')
+            login_button.click()
+            log_to_html("Logged in successfully", "success")
+        except Exception as e:
+            log_to_html(f"Error clicking login button: {e}", "error")
+
+        # Wait for 15 seconds to ensure the page is fully loaded
+        time.sleep(15)
+
+        # Click the rewards button
+        try:
+            rewards_button = WebDriverWait(driver, 5).until(
+                EC.element_to_be_clickable((By.CSS_SELECTOR, 'a.nav-link[href="/boxes/world/daily-free"]'))
+            )
+            rewards_button.click()
+            log_to_html("Clicked Rewards button", "success")
+        except Exception as e:
+            log_to_html(f"Error clicking rewards button: {e}", "error")
+
+        try:
+            balance_container = WebDriverWait(driver, 5).until(
+                EC.visibility_of_element_located((By.CSS_SELECTOR, '.balance-container'))
+            )
+            balance_text = balance_container.find_element(By.CSS_SELECTOR, '[data-test="value"]').text
+            initial_balance = float(balance_text.replace('$', '').replace(',', ''))
+            log_to_html(f"Initial balance: ${initial_balance:.2f}", "info")
+        except Exception as e:
+            log_to_html(f"Error extracting initial balance: {e}", "error")
+
+        # Get all the crates 
+        crate_elements = []
+        try:
+            crate_elements = WebDriverWait(driver, 10).until(
+            EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'cw-box-grid-item-gaming'))
+            )
+            log_to_html(f'Found {len(crate_elements)} crates', "info")
+            send_to_discord(f'Found {len(crate_elements)} crates')
+        except Exception as e:
+            log_to_html(f"Error retrieving crates: {e}", "error")
+
+            
+        # Open and sell each crate
+        for crate in crate_elements:
+            try:
+                # Check if the crate is disabled
+                open_now_button = crate.find_element(By.CSS_SELECTOR, 'button[data-test="open-case"]')
+                if 'mat-button-disabled' in open_now_button.get_attribute('class'):
+                    log_to_html('Crate is disabled, skipping...', "info")
+                    continue
+
+                # Click the "Open Now" button
+                open_now_button.click()
+                log_to_html('Opened crate', "success")
+                time.sleep(5)
+
+                # Click the "Open 1 time" button
+                open_box_button = WebDriverWait(driver, 10).until(
+                    EC.element_to_be_clickable((By.CSS_SELECTOR, 'button[data-test="open-box-button"]'))
+                )
+                open_box_button.click()
+                log_to_html('Opened box', "success")
+                time.sleep(7)
+
+                # Click the "Sell" button
+                sell_button = WebDriverWait(driver, 10).until(
+                    EC.element_to_be_clickable((By.CSS_SELECTOR, 'button[data-test="sell-reward-button"]'))
+                )
+                sell_button.click()
+                log_to_html('Sold reward', "success")
+                time.sleep(3)
+
+                # Confirm the sale
+                confirm_sell_button = WebDriverWait(driver, 10).until(
+                    EC.element_to_be_clickable((By.CSS_SELECTOR, 'button[data-test="sell-reward-button"]'))
+                )
+                confirm_sell_button.click()
+                log_to_html('Confirmed sale', "success")
+                time.sleep(5)
+
+                # Close the crate
+                close_button = WebDriverWait(driver, 10).until(
+                    EC.element_to_be_clickable((By.CSS_SELECTOR, 'button[mat-dialog-close]'))
+                )
+                close_button.click()
+                log_to_html('Closed crate', "success")
+
+                crates_opened += 1
+
+            except Exception as e:
+                log_to_html(f"Error opening/selling crate: {e}", "error")
+
+        log_to_html('Crates opened and sold successfully!', "success")
+        send_to_discord('Crates opened and sold successfully!')
+
+        try:
+            balance_container = WebDriverWait(driver, 5).until(
+                EC.visibility_of_element_located((By.CSS_SELECTOR, '.balance-container'))
+            )
+            balance_text = balance_container.find_element(By.CSS_SELECTOR, '[data-test="value"]').text
+            final_balance = float(balance_text.replace('$', '').replace(',', ''))
+            log_to_html(f"Final balance: ${final_balance:.2f}", "info")
+        except Exception as e:
+            log_to_html(f"Error extracting final balance: {e}", "error")
+
+        # Prepare final log message
+        balance_difference = final_balance - initial_balance
+        log_to_html(f"Balance difference after opening crates: ${balance_difference:.2f}", "info")
+        total_value = balance_difference
+        final_message = f'<@610938347652775947>, Hey there I have succesfully opened **{crates_opened}** Crates on **{datetime.now().strftime("%Y-%m-%d %H:%M:%S")}**. We also successfully sold all of the crates amounting to a total value of: **$ {total_value:.2f}, in game currency**! My Logs are can be viewed and downloaded at https://localhost:443 -- Thanks for using Crate Open Bot! -- Made by DebateMyRoomba'
+        log_to_html(final_message, "info")
+        send_to_discord(final_message)
+
     except Exception as e:
-        log_to_html(f"An error occurred: {e}", "error")
+        log_to_html(f"Error opening crates: {e}", "error")
+        send_to_discord(f"Error opening crates: {e}")
+
     finally:
         if driver:
             driver.quit()
+
+# Function to run the crate-opening process at regular intervals
+def schedule_open_crates():
+    log_to_html('Scheduling crate opening every 24 hours', "info")
+    send_to_discord('Scheduling crate opening every 24 hours')
+    schedule.every(24).hours.do(open_crates)
+
+    while True:
+        schedule.run_pending()
+        time.sleep(60)  # Check every minute
+
+# Function to initialize the HTML log file with HTTP
+def run_http_server():
+    handler = SimpleHTTPRequestHandler
+    with TCPServer(("", 443), handler) as httpd:
+        print("Serving at port: ", 443)
+        httpd.serve_forever()
 
 app = Flask(__name__)
 
@@ -230,10 +368,31 @@ app = Flask(__name__)
 def index():
     return send_file('index.html')
 
-if __name__ == '__main__':
+def run_flask_app():
+    port = int(os.environ.get('PORT', 443))
+    app.run(host='0.0.0.0', port=port)
+
+def main():
+    # Initialize the HTML log file
     initialize_html_log()
-    schedule.every(24).hours.do(open_crates)
-    threading.Thread(target=app.run, kwargs={'debug': False, 'use_reloader': False}).start()
-    while True:
-        schedule.run_pending()
-        time.sleep(1)
+    
+    # Start the Flask app in a separate thread
+    flask_thread = threading.Thread(target=run_flask_app, daemon=True)
+    flask_thread.start()
+    
+    # Run the crate-opening process in the main thread
+    open_crates()
+    schedule_open_crates()
+    log_to_html('Crate opening script is running...', "info")
+    send_to_discord('Crate opening script is running...')
+
+    # Keep the main thread running
+    try:
+        while True:
+            time.sleep(1)
+    except KeyboardInterrupt:
+        print("Shutting down...")
+
+# Run everything
+if __name__ == "__main__":
+    main()
