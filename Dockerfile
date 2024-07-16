@@ -1,12 +1,10 @@
-FROM cypress/browsers:latest
-
-# Use an official Python runtime as a parent image
-FROM python:3.10-slim
+# Base image
+FROM python:3.10-slim AS base
 
 # Set the working directory in the container
 WORKDIR /app
 
-# Install system dependencies
+# Install system dependencies and Chrome
 RUN apt-get update && apt-get install -y \
     wget \
     gnupg \
@@ -21,30 +19,26 @@ RUN apt-get update && apt-get install -y \
 
 # Install ChromeDriver
 RUN CHROME_DRIVER_VERSION=$(curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE) \
-    && wget -N https://storage.googleapis.com/chrome-for-testing-public/126.0.6478.126/linux64/chromedriver-linux64.zip -P /tmp/ \
-    && unzip /tmp/chromedriver-linux64.zip -d /tmp/ \
-    && rm /tmp/chromedriver-linux64.zip \
-    && mv /tmp/chromedriver-linux64/chromedriver /usr/local/bin/chromedriver \
+    && wget -N https://chromedriver.storage.googleapis.com/${CHROME_DRIVER_VERSION}/chromedriver_linux64.zip -P /tmp/ \
+    && unzip /tmp/chromedriver_linux64.zip -d /tmp/ \
+    && rm /tmp/chromedriver_linux64.zip \
+    && mv /tmp/chromedriver /usr/local/bin/chromedriver \
     && chown root:root /usr/local/bin/chromedriver \
     && chmod 0755 /usr/local/bin/chromedriver
 
-RUN chmod +x /usr/local/bin/chromedriver
-
-# Install virtualenv
-RUN pip install --no-cache-dir virtualenv
-
-# Create and activate a virtual environment
-RUN virtualenv venv
+# Set up virtual environment
+RUN pip install --no-cache-dir virtualenv \
+    && virtualenv venv
 ENV PATH="/app/venv/bin:$PATH"
 
 # Copy the current directory contents into the container
 COPY . .
 
-# Install any needed packages specified in requirements.txt
+# Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Make port 443 available to the world outside this container
+# Expose the port
 EXPOSE 443
 
-# Run app.py when the container launches
+# Command to run the app
 CMD ["python", "app.py"]

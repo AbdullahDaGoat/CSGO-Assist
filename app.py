@@ -21,6 +21,7 @@ load_dotenv()
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 
 # Set up ChromeDriver and Prevent excess logging
 sys.stderr = open(os.devnull, 'w')
@@ -164,6 +165,7 @@ def open_crates():
     driver = None # Initialize chrome web driver as None
     crates_opened = 0  # Counter for number of crates opened
     try:
+        logger.info("Starting the application")
         # Configure Chrome options to prevent bot from being blocked / gettoing external errors
         chrome_options = Options()
         chrome_options.add_argument("--incognito")
@@ -178,7 +180,7 @@ def open_crates():
 
         # Initialize undetected Chrome WebDriver with options
         driver = uc.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
-
+        logger.info("Page title was '{}'".format(driver.title))
         # Open main URL
         driver.get(main_url)
 

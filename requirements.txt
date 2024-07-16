@@ -1,6 +1,6 @@
+undetected-chromedriver
+selenium
+webdriver-manager
 python-dotenv
 requests
 schedule
-undetected-chromedriver
-selenium
-webdriver_manager
