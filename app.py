@@ -16,6 +16,7 @@ import requests
 import threading
 from http.server import SimpleHTTPRequestHandler
 from socketserver import TCPServer
+from flask import Flask, send_file
 
 load_dotenv()
 
@@ -37,58 +38,57 @@ main_url = 'https://www.csgoroll.com/withdraw/csgo/p2p'
 # Function to render html template
 def initialize_html_log():
     html_template = """
-   <!DOCTYPE html>
-<html lang="en" class="dark">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CSGORoll Crate Opening Log</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        dark: {
-                            100: '#1a202c',
-                            200: '#2d3748',
-                            300: '#4a5568',
+    <!DOCTYPE html>
+    <html lang="en" class="dark">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>CSGORoll Crate Opening Log</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <script>
+            tailwind.config = {
+                darkMode: 'class',
+                theme: {
+                    extend: {
+                        colors: {
+                            dark: {
+                                100: '#1a202c',
+                                200: '#2d3748',
+                                300: '#4a5568',
+                            }
                         }
                     }
                 }
             }
-        }
-    </script>
-</head>
-<body class="bg-dark-100 text-gray-300 min-h-screen" x-data="{ showCopiedMessage: false }">
-    <div class="container mx-auto px-4 py-8">
-        <h1 class="text-4xl font-bold mb-6 text-blue-400 border-b-2 border-blue-500 pb-2">CSGORoll Crate Opening Log</h1>
-        
-        <div class="mb-4 flex space-x-2">
-            <button @click="downloadLog()" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded transition duration-300 flex items-center">
-                <i class="fas fa-download mr-2"></i> Download Log
-            </button>
+        </script>
+    </head>
+    <body class="bg-dark-100 text-gray-300 min-h-screen" x-data="{ showCopiedMessage: false }">
+        <div class="container mx-auto px-4 py-8">
+            <h1 class="text-4xl font-bold mb-6 text-blue-400 border-b-2 border-blue-500 pb-2">CSGORoll Crate Opening Log</h1>
+            
+            <div class="mb-4 flex space-x-2">
+                <button @click="downloadLog()" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded transition duration-300 flex items-center">
+                    <i class="fas fa-download mr-2"></i> Download Log
+                </button>
+            </div>
         </div>
-    </div>
 
-    <script>
-        function downloadLog() {
-            const logContent = document.getElementById('log-container').innerText;
-            const blob = new Blob([logContent], { type: 'text/plain' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'csgoroll_log.txt';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-        }
-    </script>
-
+        <script>
+            function downloadLog() {
+                const logContent = document.getElementById('log-container').innerText;
+                const blob = new Blob([logContent], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'csgoroll_log.txt';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }
+        </script>
     """
     with open('index.html', 'w') as file:
         file.write(html_template)
@@ -360,14 +360,23 @@ def run_http_server():
         print("Serving at port: ", 443)
         httpd.serve_forever()
 
+app = Flask(__name__)
+
+@app.route('/')
+def index():
+    return send_file('index.html')
+
+def run_flask_app():
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port)
 
 def main():
     # Initialize the HTML log file
     initialize_html_log()
     
-    # Start the HTTP server in a separate thread
-    http_thread = threading.Thread(target=run_http_server, daemon=True)
-    http_thread.start()
+    # Start the Flask app in a separate thread
+    flask_thread = threading.Thread(target=run_flask_app, daemon=True)
+    flask_thread.start()
     
     # Run the crate-opening process in the main thread
     open_crates()
