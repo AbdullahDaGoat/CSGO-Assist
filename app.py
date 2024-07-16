@@ -182,7 +182,7 @@ def open_crates():
         chrome_options.add_argument('--disable-gpu')
 
         # Initialize undetected Chrome WebDriver with options
-        driver = uc.Chrome(options=chrome_options)
+        driver = uc.Chrome(service=Service(driver_executable_path=ChromeDriverManager().install()),options=chrome_options)
         logger.info("Page title was '{}'".format(driver.title))
         # Open main URL
         driver.get(main_url)
