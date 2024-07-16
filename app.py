@@ -136,18 +136,17 @@ def send_to_discord(message):
 def handle_popups(driver):
     popups_handled = False
 
-    # If both popups were not closesd we have created a loop to ensure they are prior to continuing
     while not popups_handled:
         try:
             # Handle Popup 1
-            close_button = WebDriverWait(driver, 15).until(
+            close_button = WebDriverWait(driver, 30).until(
                 EC.element_to_be_clickable((By.CSS_SELECTOR, 'button.mat-focus-indicator.close.mat-icon-button.mat-button-base'))
             )
             close_button.click()
             log_to_html("Closed Popup 1", "success")
 
             # Handle Popup 2
-            popup2_accept_button = WebDriverWait(driver, 15).until(
+            popup2_accept_button = WebDriverWait(driver, 30).until(
                 EC.element_to_be_clickable((By.CSS_SELECTOR, 'button.cky-btn.cky-btn-accept'))
             )
             popup2_accept_button.click()
@@ -156,6 +155,8 @@ def handle_popups(driver):
             popups_handled = True  # Both popups handled successfully
         except Exception as e:
             log_to_html(f"Error handling popups: {e}", "warning")
+            time.sleep(5)  # Wait before retrying
+
 
 # Initialize Sold values as a list to map later (so if sold value is none then the value outputed is zero)
 sold_values = []
@@ -177,7 +178,7 @@ def open_crates():
         chrome_options.add_argument("--verbose")  
         chrome_options.add_argument('--no-sandbox')
         chrome_options.add_argument('--disable-dev-shm-usage')
-        chrome_options.add_argument('--headless')
+        # chrome_options.add_argument('--headless')
         chrome_options.add_argument('--disable-gpu')
 
         # Initialize undetected Chrome WebDriver with options
