@@ -1,7 +1,6 @@
-undetected-chromedriver
-selenium
-webdriver-manager
+Flask
 python-dotenv
 requests
 schedule
-flask
+playwright
+werkzeug==2.0.0
