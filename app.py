@@ -188,7 +188,7 @@ def open_crates():
         driver.get(main_url)
 
         # Call the Handle popups function
-        handle_popups(driver)
+        # handle_popups(driver)
 
         # Wait for the entire page to load
         time.sleep(5)
