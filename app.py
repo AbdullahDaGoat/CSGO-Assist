@@ -160,7 +160,7 @@ def open_crates():
         chrome_options.add_argument('--disable-dev-shm-usage')
         chrome_options.add_argument('--headless')
         chrome_options.add_argument('--disable-gpu')
-        driver_path = '/usr/local/bin/chromedriver'  # Path to ChromeDriver
+        driver_path = '/root/.local/share/undetected_chromedriver/undetected_chromedriver'  # Path to ChromeDriver
         driver = uc.Chrome(driver_executable_path=driver_path, options=chrome_options)
         logger.info("Page title was '{}'".format(driver.title))
         driver.get(main_url)
