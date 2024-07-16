@@ -394,4 +394,9 @@ def main():
 
 # Run everything
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception as e:
+        print(f"Fatal error: {str(e)}")
+        log_to_html(f"Fatal error: {str(e)}", "error")
+        send_to_discord(f"Fatal error: {str(e)}")
