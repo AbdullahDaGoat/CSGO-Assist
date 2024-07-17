@@ -126,7 +126,7 @@ def handle_popups(page):
     while not popups_handled:
         try:
             # Handle Popup 1
-            close_button = page.wait_for_selector('button.mat-focus-indicator.close.mat-icon-button.mat-button-base', timeout=30000)
+            close_button = page.wait_for_selector('button.mat-focus-indicator.close.mat-icon-button.mat-button-base', timeout=60000)
             close_button.click()
             log_to_html("Closed Popup 1", "success")
 
