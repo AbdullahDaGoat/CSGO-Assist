@@ -17,10 +17,15 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Playwright and its dependencies
-RUN pip install playwright -U undetected-playwright && playwright install-deps
+RUN pip install playwright  
+
+RUN python -m playwright install-deps
+
+RUN pip install -U undetected-playwright
 
 # Install Flask and other Python dependencies
 COPY requirements.txt .
+
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the rest of the application code
