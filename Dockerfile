@@ -36,4 +36,4 @@ COPY . .
 EXPOSE 443
 
 # Run the Flask application
-CMD ["python", "your_script_name.py"]
+CMD ["python", "app.py"]
