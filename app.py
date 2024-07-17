@@ -143,7 +143,7 @@ def handle_popups(page):
 @contextmanager
 def playwright_context():
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=False, args=[
+        browser = p.chromium.launch(headless=True, args=[
             '--no-sandbox',
             '--incognito',
             '--disable-extensions',
