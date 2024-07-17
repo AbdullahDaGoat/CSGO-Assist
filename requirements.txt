@@ -4,3 +4,5 @@ requests
 schedule
 playwright
 werkzeug==2.0.0
+playwright-stealth
+undetected-playwright
