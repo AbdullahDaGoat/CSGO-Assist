@@ -1,38 +1,39 @@
-# Use an official Python runtime as the base image
+# Use the official Python image from Docker Hub
 FROM python:3.9-slim
 
 # Set environment variables
-ENV PYTHONUNBUFFERED=1
-ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
 
 # Set the working directory in the container
 WORKDIR /app
 
 # Install system dependencies
-RUN apt-get update && apt-get install -y \
-    wget \
-    gnupg \
-    curl \
-    xvfb \
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        chromium \
+        libglib2.0-0 \
+        libnss3 \
+        libgconf-2-4 \
+        libfontconfig1 \
+        wget \
+        ca-certificates \
+        fonts-liberation \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Playwright and its dependencies
-RUN pip install playwright  
+# Install Playwright and browsers
+RUN python -m pip install playwright
+RUN playwright install
 
-RUN python -m playwright install-deps
-
-RUN pip install -U undetected-playwright
-
-# Install Flask and other Python dependencies
-COPY requirements.txt .
-
+# Install Python dependencies
+COPY requirements.txt requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the rest of the application code
+# Copy the entire current directory into the container
 COPY . .
 
-# Expose the port the app runs on
+# Expose the port that Flask runs on
 EXPOSE 443
 
-# Specify the command to run your application
-CMD ["python", "app.py"]
+# Run the Flask application
+CMD ["python", "your_script_name.py"]
