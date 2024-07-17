@@ -23,7 +23,7 @@ RUN apt-get update \
 
 # Install Playwright and browsers
 RUN python -m pip install playwright
-RUN playwright install
+RUN python -m playwright install
 
 # Install Python dependencies
 COPY requirements.txt requirements.txt
